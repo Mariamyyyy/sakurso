@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>პროფილი | Gesta.გესტა</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+       /* პროფილის ჰედერი */
+.profile-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    padding: 4rem 0 3rem; /* ცოტა მეტი padding ზემოთ */
+    text-align: center;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    margin-bottom: 3rem;
+    position: relative;
+}
+
+/* პროფილის ავატარი */
+.profile-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: #667eea;
+    margin: 0 auto 1rem;
+    border: 4px solid #fff;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.profile-avatar:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+
+/* პროფილის ბარათი */
+.profile-card {
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    border-radius: 15px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.profile-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+}
+
+/* ინფორმაციის ეტიკეტები */
+.info-label {
+    font-weight: 600;
+    color: #6c757d;
+    margin-bottom: 0.3rem;
+}
+
+/* ინფორმაციის მნიშვნელობები */
+.info-value {
+    font-size: 1.15rem;
+    color: #212529;
+    margin-bottom: 1.2rem;
+}
+
+/* მოქმედებების ბლოკი */
+.card .btn {
+    font-size: 1rem;
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+}
+
+/* სტატისტიკის ბლოკი */
+.profile-card .row .col-md-4 {
+    border-right: 1px solid #e9ecef;
+}
+
+.profile-card .row .col-md-4:last-child {
+    border-right: none;
+}
+
+.profile-card h2 {
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.profile-card p {
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+/* მოდალის სტილი */
+.modal-content {
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.modal-header {
+    background-color: #667eea;
+    color: #fff;
+    border-bottom: none;
+}
+
+.modal-footer {
+    border-top: none;
+}
+
+.modal-body .form-control {
+    border-radius: 8px;
+    padding: 0.5rem 0.75rem;
+}
+    </style>
+</head>
+<body>
+
+       <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="index.html">Gesta.გესტა</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link active" href="index.html">მთავარი</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="admin.html">ადმინი</a></li>
+                    <li class="nav-item"><a class="nav-link" href="products.html">პროდუქტები</a></li>
+                    <li class="nav-item"><a class="nav-link" href="cart.html">კალათა</a></li>
+                    <li class="nav-item"><a class="nav-link" href="login.html">შესვლა</a></li>
+                    <li class="nav-item"><a class="btn btn-outline-light btn-sm ms-2" href="register.html">რეგისტრაცია</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!-- პროფილის სათაური -->
+    <div class="profile-header">
+        <div class="container text-center">
+            <div class="profile-avatar" id="userAvatar">👤</div>
+            <h1 id="profileName">Loading...</h1>
+            <p class="mb-0" id="profileEmail">...</p>
+        </div>
+    </div>
+
+    <!-- პროფილის კონტენტი -->
+    <div class="container mb-5">
+        <div class="row">
+            <!-- პროფილის ინფორმაციის ბლოკი -->
+            <div class="col-md-6 mb-4">
+                <div class="card profile-card">
+                    <div class="card-body p-4">
+                        <h4 class="card-title mb-4">
+                            <i class="bi bi-person-circle"></i> Profile Info
+                        </h4>
+                        <div class="info-label">სახელი:</div>
+                        <div class="info-value" id="userName">—</div>
+                        <div class="info-label">იმეილი:</div>
+                        <div class="info-value" id="userEmail">—</div>
+                        <div class="info-label">მომხმარებლის ID:</div>
+                        <div class="info-value" id="userId">—</div>
+                        <div class="info-label">როდის შეიქმნა პროფილი</div>
+                        <div class="info-value" id="registrationDate">—</div>
+                    </div>
+                </div>
+            </div>
+            <!-- მოქმედებების ბლოკი -->
+            <div class="col-md-6 mb-4">
+                <div class="card profile-card">
+                    <div class="card-body p-4">
+                        <h4 class="card-title mb-4">მოქმედებები</h4>
+                        <div class="d-grid gap-3">
+                            <a href="cart.html" class="btn btn-primary btn-lg">
+                                🛒 კალათა
+                            </a>
+
+                            <a href="products.html" class="btn btn-success btn-lg">
+                                🛍️ გადასვლა პროდუქტებზე
+                            </a>
+
+                            <button id="editProfileBtn" class="btn btn-outline-primary btn-lg">
+                                ✏️ პროფილის რედაქტირება
+                            </button>
+
+                            <button id="logoutBtn" class="btn btn-outline-danger btn-lg">
+                                🚪 გასვლა
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics Card -->
+            <div class="col-md-12">
+                <div class="card profile-card">
+                    <div class="card-body p-4">
+                        <h4 class="card-title mb-4">სტატისტიკა</h4>
+                        <div class="row text-center">
+                            <div class="col-md-4">
+                                <div class="p-3">
+                                    <h2 class="text-primary" id="cartItemsCount">0</h2>
+                                    <p class="text-muted mb-0">პროდუქტები კალათაში</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="p-3">
+                                    <h2 class="text-success" id="cartTotal">$0.00</h2>
+                                    <p class="text-muted mb-0">ჯამი</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="p-3">
+                                    <h2 class="text-info" id="memberDays">0</h2>
+                                    <p class="text-muted mb-0">შეძენილი</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- პროფილის რედაქტირება-->
+    <div class="modal fade" id="editModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">პროფილის რედაქტირება</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editForm">
+                        <div class="mb-3">
+                            <label for="editName" class="form-label">სახელი</label>
+                            <input type="text" class="form-control" id="editName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editEmail" class="form-label">მეილი</label>
+                            <input type="email" class="form-control" id="editEmail" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">გასვლა</button>
+                    <button type="button" class="btn btn-primary" id="saveChangesBtn">ცვლილებების შენახვა</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module">
+        import { getCart } from './js/api.js';
+        function getAuthenticatedUser() {
+            const localUser = localStorage.getItem('user');
+            const sessionUser = sessionStorage.getItem('user');
+            console.log('Checking authentication...');
+            console.log('localStorage user:', localUser);
+            console.log('sessionStorage user:', sessionUser);
+            const userString = localUser || sessionUser;
+            if (!userString) {
+                console.error('No user found in storage!');
+                return null;
+            }
+            try {
+                const user = JSON.parse(userString);
+                console.log('Authenticated user:', user);
+                return user;
+            } catch (error) {
+                console.error('Failed to parse user data:', error);
+                return null;
+            }
+        }
+
+        // ავტორიზაციის შემოწმება
+        const user = getAuthenticatedUser();
+
+        if (!user) {
+            alert('გთხოვთ, გაიაროთ ავტორიზაცია');
+            window.location.href = 'login.html';
+            throw new Error('Not authenticated');
+        }
+        const getInitial = (name) => {
+            return name ? name.charAt(0).toUpperCase() : '?';
+        };
+        function loadProfile() {
+            console.log('Loading profile for user:', user);
+            document.getElementById('profileName').textContent = user.name || 'მომხმარებელი';
+            document.getElementById('profileEmail').textContent = user.email || 'არ არის მითითებული';
+            document.getElementById('userName').textContent = user.name || 'მომხმარებელი';
+            document.getElementById('userEmail').textContent = user.email || 'არ არის მითითებული';
+            document.getElementById('userId').textContent = user.id || 'არ არის მითითებული';
+            document.getElementById('userAvatar').textContent = getInitial(user.name);
+
+            // რეგისტრაციის თარიღის ფორმატირება
+            const regDate = user.createdAt ? new Date(user.createdAt).toLocaleDateString('en') : 'Not specified';
+            document.getElementById('registrationDate').textContent = regDate;
+
+            // მომხმარებლის წევრობის დღეები
+            if (user.createdAt) {
+                const created = new Date(user.createdAt);
+                const now = new Date();
+                const days = Math.floor((now - created) / (1000 * 60 * 60 * 24));
+                document.getElementById('memberDays').textContent = days;
+            }
+            loadCartStats();
+        }
+
+        // კალათის სტატისტიკის ჩატვირთვა
+        async function loadCartStats() {
+            try {
+                const cart = await getCart(user.id);
+                const itemsCount = cart.length;
+                const total = cart.reduce((sum, item) => sum + (item.Price * item.qty), 0);
+
+                document.getElementById('cartItemsCount').textContent = itemsCount;
+                document.getElementById('cartTotal').textContent = '$' + total.toFixed(2);
+            } catch (error) {
+                console.error('ჩატვირთვის შეცდომა:', error);
+            }
+        }
+
+        // გასვლა
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            if (confirm('დარწმუნებული ხართ?')) {
+                localStorage.removeItem('user');
+                sessionStorage.removeItem('user');
+                console.log('User logged out, storage cleared');
+                alert('თქვენ წარმატებით გამოხვედით  სისტემიდან');
+                window.location.href = 'index.html';
+            }
+        });
+
+        // რედაქტირება
+        document.getElementById('editProfileBtn').addEventListener('click', () => {
+            document.getElementById('editName').value = user.name;
+            document.getElementById('editEmail').value = user.email;
+            const modal = new bootstrap.Modal(document.getElementById('editModal'));
+            modal.show();
+        });
+
+        // ცვლილებების შენახვა
+        document.getElementById('saveChangesBtn').addEventListener('click', () => {
+            const newName = document.getElementById('editName').value.trim();
+            const newEmail = document.getElementById('editEmail').value.trim();
+
+            if (!newName || !newEmail) {
+                alert('შეავსეთ ყველა ველი');
+                return;
+            }
+
+            // მონაცემების განახლება
+            user.name = newName;
+            user.email = newEmail;
+
+            // იგივე ბაზაში შენახვა
+            if (localStorage.getItem('user')) {
+                localStorage.setItem('user', JSON.stringify(user));
+                console.log('User updated in localStorage');
+            } else {
+                sessionStorage.setItem('user', JSON.stringify(user));
+                console.log('User updated in sessionStorage');
+            }
+
+            // დახურვა
+            const modal = bootstrap.Modal.getInstance(document.getElementById('editModal'));
+            modal.hide();
+
+            // პროფილის გადატვირთვა
+            loadProfile();
+            alert('Профиль успешно обновлен!');
+        });
+
+        // გვერდის გადატვირთვის შემდეგ პროფილის ჩატვირთვა
+        loadProfile();
+    </script>
+</body>
+
+</html>

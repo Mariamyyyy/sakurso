@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ადმინი MockAPI | Gesta</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .admin-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+        .action-card {
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+        .action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">Gesta.გესტა  ადმინი</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">მთავარი</a></li>
+                    <li class="nav-item"><a class="nav-link" href="products.html">პროდუქტები</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="admin.html">ადმინი</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="admin-header">
+        <div class="container text-center">
+            <h1>ადმინი</h1>
+            <p class="mb-0">მონაცემთა ბაზის მართვა</p>
+        </div>
+    </div>
+    <div class="container mb-5">
+        <!-- სწრაფი მოქმედებები -->
+        <div class="row mb-4">
+            <div class="col-md-4 mb-3">
+                <div class="card action-card bg-primary text-white" onclick="loadProducts()">
+                    <div class="card-body text-center">
+                        <h1>📦</h1>
+                        <h5>პროდუქტების ნახვა</h5>
+                        <p class="mb-0">მონაცემთა ბაზიდან ყველა პროდუქტის ჩვენება</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <div class="card action-card bg-success text-white" onclick="loadUsers()">
+                    <div class="card-body text-center">
+                        <h1>👥</h1>
+                        <h5>მომხმარებლების ნახვა</h5>
+                        <p class="mb-0">მონაცემთა ბაზიდან ყველა მომხმარებლის ჩვენება</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <div class="card action-card bg-warning text-white" onclick="showAddProductForm()">
+                    <div class="card-body text-center">
+                        <h1>➕</h1>
+                        <h5>პროდუქტის დამატება</h5>
+                        <p class="mb-0">სწრაფი პროდუქტის დამატება</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- მონაცემთა ჩენება -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0" id="dataTitle">მონაცემები</h5>
+            </div>
+            <div class="card-body">
+                <div id="alertContainer"></div>
+                <div id="dataContainer">
+                    <p class="text-muted text-center">აირჩიეთ ქმედება ზემოთ</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- პროდუქტის რედაქტირება-->
+        <div class="modal fade" id="editProductModal" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">პროდუქტის რედაქტირება</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editProductForm">
+                            <input type="hidden" id="editProductId">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">სახელი</label>
+                                    <input type="text" class="form-control" id="editTittle" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">ფასი ($)</label>
+                                    <input type="number" class="form-control" id="editPrice" step="0.01" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">აღწერა</label>
+                                <textarea class="form-control" id="editDescription" rows="3"></textarea>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">კატეგორია</label>
+                                    <input type="text" class="form-control" id="editCategory">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">რაოდენობა</label>
+                                    <input type="number" class="form-control" id="editStock" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label"> სურათის URL</label>
+                                <input type="url" class="form-control" id="editImage">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                        <button type="button" class="btn btn-primary" onclick="saveProduct()">Сохранить</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- პროდუქტის დამატება -->
+        <div class="modal fade" id="addProductModal" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">პროდუქტის დამატება</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="addProductForm">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">სახელი</label>
+                                    <input type="text" class="form-control" id="addTittle" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">ფასი ($)</label>
+                                    <input type="number" class="form-control" id="addPrice" step="0.01" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">აღწერა</label>
+                                <textarea class="form-control" id="addDescription" rows="3"></textarea>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">კატეგორია</label>
+                                    <input type="text" class="form-control" id="addCategory" value="general">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">რაოდენობა</label>
+                                    <input type="number" class="form-control" id="addStock" value="100" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">სურათის URL</label>
+                                <input type="url" class="form-control" id="addImage"
+                                    placeholder="https://images.unsplash.com/...">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                        <button type="button" class="btn btn-success" onclick="addProduct()">Добавить</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const API_BASE = 'https://6979f599cc9c576a8e185e3f.mockapi.io';
+        // პროდუქტების ჩატვირთვა
+        async function loadProducts() {
+            try {
+                showLoading();
+                const response = await fetch(`${API_BASE}/Products`);
+                const products = await response.json();
+                document.getElementById('dataTitle').textContent = `📦 პროდუქტები (${products.length})`;
+                let html = `
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>სახელი</th>
+                                    <th>ფასი</th>
+                                    <th>კატეგორია</th>
+                                    <th>რაოდენობა</th>
+                                    
+                                    <th>Created by</th>
+                                    <th>Created at</th>
+                                    <th>მოქმედება</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+                products.forEach(p => {
+                    // გამოიყენე id ან Product_id
+                    const productId = p.id || p.Product_id;
+                    
+                    console.log('პროდუქტი:', {
+                        id: p.id,
+                        Product_id: p.Product_id,
+                        გამოიყენება: productId
+                    }); 
+                    html += `
+                        <tr>
+                            <td>${productId}</td>
+                            <td>${p.Tittle || 'სახელი არ არის'}</td>
+                            <td>$${p.Price || 0}</td>
+                            <td>${p.category || 'კატეგორია არ არის'}</td>
+                            <td>${p.stock || 0}</td>
+                            <td>${p.createdBy}</td>
+                            <td>${p.createdAt}</td>
+                            <td>
+                                <button class="btn btn-sm btn-primary" onclick='editProduct(${JSON.stringify(p).replace(/'/g, "&apos;")})'>✏️</button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteProduct('${productId}')">🗑️</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                html += `
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+                document.getElementById('dataContainer').innerHTML = html;
+                showAlert('✅ პროდუქტები ჩატვირთულია', 'success');
+            } catch (error) {
+                showAlert('❌ შეცდომა: ' + error.message, 'danger');
+                console.error(error);
+            }
+        }
+        // მომხმარებლების ჩატვირთვა
+        async function loadUsers() {
+            try {
+                showLoading();
+                const response = await fetch(`${API_BASE}/Users`);
+                const users = await response.json();
+                document.getElementById('dataTitle').textContent = `👥 მომხმარებლები (${users.length})`;
+                let html = `
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>სახელი</th>
+                                    <th>ელ.ფოსტა</th>
+                                    <th>მოქმედება</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+                users.forEach(u => {
+                    html += `
+                        <tr>
+                            <td>${u.id}</td>
+                            <td>${u.name || 'არაა მითითებული'}</td>
+                            <td>${u.Email || u.email || 'არაა მითითებული'}</td>
+                            <td>
+                                <button class="btn btn-sm btn-danger" onclick="deleteUser('${u.id}')">🗑️</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                html += `
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+                document.getElementById('dataContainer').innerHTML = html;
+                showAlert('✅ მომხმარებლები ჩატვირთულია', 'success');
+
+            } catch (error) {
+                showAlert('❌ შეცდომა: ' + error.message, 'danger');
+            }
+        }
+
+        // პროდუქტის რედაქტირება
+        function editProduct(product) {
+            const productId = product.id || product.Product_id;
+            console.log('✏️ პროდუქტის რედაქტირება:', productId, product);
+            document.getElementById('editProductId').value = productId;
+            document.getElementById('editTittle').value = product.Tittle || '';
+            document.getElementById('editPrice').value = product.Price || 0;
+            document.getElementById('editDescription').value = product.description || '';
+            document.getElementById('editCategory').value = product.category || '';
+            document.getElementById('editStock').value = product.stock || 0;
+            document.getElementById('editImage').value = product.Image || '';
+            const modal = new bootstrap.Modal(document.getElementById('editProductModal'));
+            modal.show();
+        }
+        // პროდუქტის შენახვა
+        async function saveProduct() {
+            const id = document.getElementById('editProductId').value;
+            const product = {
+                Tittle: document.getElementById('editTittle').value,
+                Price: parseFloat(document.getElementById('editPrice').value),
+                description: document.getElementById('editDescription').value,
+                category: document.getElementById('editCategory').value,
+                stock: parseInt(document.getElementById('editStock').value),
+                Image: document.getElementById('editImage').value
+            };
+            try {
+                const response = await fetch(`${API_BASE}/Products/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(product)
+                });
+                if (response.ok) {
+                    showAlert('✅ პროდუქტი განახლებულია!', 'success');
+                    bootstrap.Modal.getInstance(document.getElementById('editProductModal')).hide();
+                    loadProducts();
+                } else {
+                    throw new Error('Failed to update');
+                }
+            } catch (error) {
+                showAlert('❌ შეცდომა: ' + error.message, 'danger');
+            }
+        }
+
+        // პროდუქტის წაშლა
+        async function deleteProduct(id) {
+            console.log('🗑️ პროდუქტის წაშლის მცდელობა ID-ით:', id);
+
+            if (!id || id === 'undefined') {
+                showAlert('❌ შეცდომა: პროდუქტის ID არ არის მითითებული', 'danger');
+                console.error('პროდუქტის ID არაა მითითებული!');
+                return;
+            }
+
+            if (!confirm('დარწმუნებული ხართ, რომ გინდათ პროდუქტის წაშლა?')) return;
+
+            try {
+                // ვცდი  რამდენიმე შესაძლო URL ვარიანტს
+                const urls = [
+                    `${API_BASE}/Products/${id}`,
+                    `${API_BASE}/products/${id}`,
+                    `${API_BASE}/Product/${id}`
+                ];
+                let success = false;
+                let lastError = '';
+                for (let url of urls) {
+                    console.log('📤 ვცდი DELETE:', url);
+                    try {
+                        const response = await fetch(url, {
+                            method: 'DELETE'
+                        });
+                        console.log('📥 პასუხი:', response.status, response.statusText);
+
+                        if (response.ok) {
+                            console.log('✅ წარმატებულია:', url);
+                            showAlert('✅ პროდუქტი წაშლილია!', 'success');
+                            loadProducts();
+                            success = true;
+                            break;
+                        } else {
+                            const errorText = await response.text();
+                            lastError = `${response.status} - ${errorText}`;
+                            console.log('❌ არ მოხდა:', lastError);
+                        }
+                    } catch (err) {
+                        console.log('❌ შეცდომა მოთხოვნისას:', err);
+                        lastError = err.message;
+                    }
+                }
+                
+                if (!success) {
+                    throw new Error(`ვერ მოხდა პროდუქტის წაშლა: ${lastError}`);
+                }
+                
+            } catch (error) {
+                console.error('❌ შეცდომა წაშლისას:', error);
+                showAlert('❌ შეცდომა: ' + error.message + '\n\nMockAPI-ის პარამეტრების შემოწმება (შეიძლება რესურსი მხოლოდ წაკითხვისთვის იყოს)', 'danger');
+            }
+        }
+
+        // მომხმარებლის წაშლა
+        async function deleteUser(id) {
+            if (!confirm('დარწმუნებული ხართ, რომ გინდათ მომხმარებლის წაშლა?')) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/Users/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    showAlert('✅ მომხმარებელი წაშლილია!', 'success');
+                    loadUsers();
+                } else {
+                    throw new Error('Failed to delete');
+                }
+            } catch (error) {
+                showAlert('❌ შეცდომა: ' + error.message, 'danger');
+            }
+        }
+
+        // ფორმის ჩვენება დამატებისთვის
+        function showAddProductForm() {
+            document.getElementById('addProductForm').reset();
+            const modal = new bootstrap.Modal(document.getElementById('addProductModal'));
+            modal.show();
+        }
+
+        // პროდუქტის დამატება
+        async function addProduct() {
+            const product = {
+                Tittle: document.getElementById('addTittle').value,
+                Price: parseFloat(document.getElementById('addPrice').value),
+                description: document.getElementById('addDescription').value,
+                category: document.getElementById('addCategory').value,
+                stock: parseInt(document.getElementById('addStock').value),
+                Image: document.getElementById('addImage').value,
+                createdBy: 'admin',
+                createdAt: Date.now()
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/Products`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(product)
+                });
+
+                if (response.ok) {
+                    showAlert('✅ პროდუქტი დამატებულია!', 'success');
+                    bootstrap.Modal.getInstance(document.getElementById('addProductModal')).hide();
+                    loadProducts();
+                } else {
+                    throw new Error('Failed to add');
+                }
+            } catch (error) {
+                showAlert('❌ შეცდომა: ' + error.message, 'danger');
+            }
+        }
+
+        // დამხმარე ფუნქცია
+        function showLoading() {
+            document.getElementById('dataContainer').innerHTML = `
+                <div class="text-center p-5">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <p class="mt-3">იტვირთება...</p>
+                </div>
+            `;
+        }
+
+        function showAlert(message, type) {
+            const container = document.getElementById('alertContainer');
+            container.innerHTML = `
+                <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            setTimeout(() => container.innerHTML = '', 5000);
+        }
+    </script>
+
+</body>
+
+</html>
